@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, user-scalable=no">
+<title>検索システム</title>
+<link rel="stylesheet" href="bootstrap.css">
+<script src="jquery-3.3.1.min.js"></script>
+<script src="popper.min.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="jquery-ui.min.js"></script>
+<script src="jquery.ui.touch-punch.min.js"></script>
+<script src="fastclick.min.js"></script>
+<script src="moji.js"></script>
+<script src="header.js"></script>
+<script src="app.js"></script>
+<!-- <script src="以下オリジナルJavascriptまたは追加ライブラリ"></script> -->
+<script src="data.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-8 mx-auto">
+
+    
+    <div class="bg-light p-2">
+
+        <!--検索フォーム-->
+        <form action="javascript:void(0);">
+            <div class="input-group my-3">
+
+                <div class="input-group-append">
+                    <a href="#" id="formclear" class="input-group-text" style="border-top-left-radius:0.3rem;border-bottom-left-radius:0.3rem;border-right:none;">クリア</a>
+                </div>
+
+                <input type="text" class="form-control" id="keywords">
+
+                <div class="input-group-append">
+                    <button onclick="search();" class="input-group-text">検索</button>
+                </div>
+
+            </div>
+        </form>
+
+        <!--一覧表示-->
+        <div class="text-center my-3">
+        <a href="index.html" class="btn btn-secondary" style="background-color: #e9ecef;color: #495057;border: 1px solid #ced4da;">一覧表示</a>
+        </div>
+
+    </div>
+
+<!-- ↓↓↓コンテンツ↓↓↓ -->
+<div  style="background-color:grey;height:300px;">
+  <h1>ここに各ページのコンテンツを記述します</h1>
+</div>
+<!-- ↑↑↑コンテンツ↑↑↑ -->
+</div>
+</div>
+</div>
+<footer class="text-center p-2 bg-secondary">Copyright ©</footer>
+</div>
+<script>
+$(function(){
+    $("#keywords").focus();
+
+    $("#formclear").on("click", function(){
+        $("#keywords").val("").focus();
+    });
+
+    if(document.cookie){
+        nyuuryokuti = document.cookie.slice(9).split(",").join(" ");
+        $("#keywords").val(nyuuryokuti);
+    }
+});
+</script>
+</body>
+</html>

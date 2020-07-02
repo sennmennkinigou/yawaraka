@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, user-scalable=no">
+<title>検索システム</title>
+<link rel="stylesheet" href="bootstrap.css">
+<script src="jquery-3.3.1.min.js"></script>
+<script src="popper.min.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="jquery-ui.min.js"></script>
+<script src="jquery.ui.touch-punch.min.js"></script>
+<script src="fastclick.min.js"></script>
+<script src="moji.js"></script>
+<script src="header.js"></script>
+<script src="app.js"></script>
+<!-- <script src="js/以下オリジナルJavascriptまたは追加ライブラリ"></script> -->
+<script src="data.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<script>header();</script>
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-8 mx-auto">
+
+    
+    <div class="bg-light p-2">
+
+        <!--検索フォーム-->
+        <form action="javascript:void(0);">
+            <div class="input-group my-3">
+
+                <div class="input-group-append">
+                    <a href="#" id="formclear" class="input-group-text" style="border-top-left-radius:0.3rem;border-bottom-left-radius:0.3rem;border-right:none;">クリア</a>
+                </div>
+
+                <input type="text" class="form-control" id="keywords">
+
+                <div class="input-group-append">
+                    <button onclick="search();" class="input-group-text">検索</button>
+                </div>
+
+            </div>
+        </form>
+
+        <!--一覧表示-->
+        <div class="text-center my-3">
+        <a href="index.html" class="btn btn-secondary" style="background-color: #e9ecef;color: #495057;border: 1px solid #ced4da;">一覧表示</a>
+        </div>
+
+    </div>
+
+<!-- ↓↓↓コンテンツ↓↓↓ -->
+
+<div id="counter"></div>
+
+<dvi id="indexarea"></dvi>
+<script>
+
+//if→一覧、クエリ空、else→それ以外=クエリに何かしらある
+if(location.search == "" || location.search == "?q="){
+
+        ////alert("パラメータがないので一覧を表示します");
+
+    for(var i = 0; i < array.length; i++){
+        document.getElementById("indexarea").innerHTML += `
+        <div class="card my-5">
+            <div class="card-body">
+                <img src="${array[i][2]}" class="card-img-top-test mx-auto" alt="">
+                <h6 class="card-title">${array[i][0]}</h6>
+                <p class="card-text" style="white-space: pre-wrap;">${array[i][1].slice(0, 60) + "....."}<a href="show.html?post=${i}">詳細を見る</a></p>
+                <div class="text-right">
+                    <a href="show.html?post=${i}" class="btn btn-primary">詳細を見る</a>
+                </div>
+            </div>
+        </div>
+        `;
+    };
+
+    document.cookie = "keywords=;max-age=0";
+
+}else{
+
+        ////alert("検索します。AND検索です。");
+
+    let keywords = location.search;
+
+    let counter = 0;
+
+        ////alert("?以降の文字列です"+ keywords);
+        
+    keywords = decodeURI(keywords).slice(3);
+
+        ////alert(`デコードしました「${keywords}」`);
+
+        ////alert("検索キーワード文字列は「" + keywords + "」です。これを分解しAND検索を行います。");
+
+    //ここから本命の検索ロジックです
+    keywords = keywords.replace("　", " ").split(" ");
+
+        ////alert(`配列化しました「${keywords}」`);
+
+    for(let i = 0; i < array.length; i++){
+
+        //正規表現を利用してAND検索を実現します
+        //レコードの文字列を全部ガッチャンコしてその中で複数条件でパターンマッチをさせる
+
+        all_str = array[i][0].toString() + array[i][1].toString();
+
+            ////alert(all_str);
+
+        /*
+        data.jsのデータのままガッチャンコしても改行コードが検索の障害になっているようです。検索時は文の構成は全く関係ないので全て一列文字にします。
+        かなりハマりました。
+        なぜ気付けたか？「検索文字パータンを乱れ打ちして、一列目だけAND検索ができることに気付きました。よって二列目以降が検索できていないと、おそらくテンプレート構文か？と」
+        https://qiita.com/hrdaya/items/291276a5a20971592216
+        改行コードを削除する
+        */
+
+        all_str = all_str.replace(/\n/g, '');
+
+        //正規表現のパターンを作成します
+        str = keywords.join(")(?=.*"); //区切り文字が「)(?=.*」ってことです
+
+        str = "^(?=.*" + str + ")"; //文字列の文頭と文尾に処理を施します
+
+        //この時点でstrは正規表現化オブジェクト前のただの文字列です
+        
+            ////alert(`正規表現前の文字列です→${str}`);
+
+        //.matchメソッドの引数にはただの変数を入れても無駄みたいなので正規表現オブジェクトを作成する
+
+        regexp = new RegExp(str, "i");
+
+            ////alert(`正規表現オブジェクトです→${regexp}`);
+
+        if(all_str.match(regexp)){
+
+            document.getElementById("indexarea").innerHTML += `
+            <div class="card my-5">
+                <div class="card-body">
+                    <h6 class="card-title">${array[i][0]}</h6>
+                    <p class="card-text" style="white-space: pre-wrap;">${array[i][1].slice(0, 60) + "....."}<a href="show.html?post=${i}">詳細を見る</a></p>
+                    <div class="text-right"><a href="show.html?post=${i}" class="btn btn-primary">詳細を見る</a></div>
+                </div>
+            </div>
+            `;
+            
+                //このifが実行されたらcounterに+1する。
+            counter += 1;  
+  
+        }
+    };//for閉じ
+
+    document.querySelector("#counter").innerHTML = `<p>検索結果は${counter}件です。</p>`;
+
+    document.cookie = `keywords=${keywords}`;
+
+        alert(document.cookie.slice(9));
+        console.log(document.cookie.slice(9));
+    
+    nyuuryokuti = document.cookie.slice(9).split(",").join(" ");
+
+        alert(nyuuryokuti);
+
+    $("#keywords").val(nyuuryokuti);
+
+}//else閉じ
+
+</script>
+
+<!-- ↑↑↑コンテンツ↑↑↑ -->
+</div>
+</div>
+</div>
+<footer class="text-center p-2 bg-secondary">Copyright ©</footer>
+</div>
+<script>
+$(function(){
+    $("#keywords").focus();
+
+    $("#formclear").on("click", function(){
+        $("#keywords").val("").focus();
+    });
+});
+</script>
+</body>
+</html>
